@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { CChart } from '@coreui/vue-chartjs'
 import { getStyle } from '@coreui/utils'
 
@@ -27,28 +27,6 @@ const data = {
     },
   ],
 }
-
-onMounted(() => {
-  document.documentElement.addEventListener('ColorSchemeChange', () => {
-    if (mainChartRef.value) {
-      mainChartRef.value.chart.options.scales.x.grid.borderColor = getStyle(
-        '--cui-border-color-translucent',
-      )
-      mainChartRef.value.chart.options.scales.x.grid.color = getStyle(
-        '--cui-border-color-translucent',
-      )
-      mainChartRef.value.chart.options.scales.x.ticks.color = getStyle('--cui-body-color')
-      mainChartRef.value.chart.options.scales.y.grid.borderColor = getStyle(
-        '--cui-border-color-translucent',
-      )
-      mainChartRef.value.chart.options.scales.y.grid.color = getStyle(
-        '--cui-border-color-translucent',
-      )
-      mainChartRef.value.chart.options.scales.y.ticks.color = getStyle('--cui-body-color')
-      mainChartRef.value.chart.update()
-    }
-  })
-})
 </script>
 
 <template>
