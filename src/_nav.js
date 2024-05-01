@@ -63,7 +63,7 @@ export default [
     component: 'CNavGroup',
     name: 'Admin',
     to: '/icons',
-    icon: 'cil-star',
+    icon: 'cil-people',
     items: [
       {
         component: 'CNavItem',
