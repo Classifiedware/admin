@@ -155,54 +155,29 @@ const routes = [
         ],
       },
       {
-        path: '/forms',
-        name: 'Forms',
+        path: '/classified',
+        name: 'Classified',
         component: {
           render() {
             return h(resolveComponent('router-view'))
           },
         },
-        redirect: '/forms/form-control',
+        redirect: '/classified/create',
         children: [
           {
-            path: '/forms/form-control',
-            name: 'Form Control',
-            component: () => import('@/views/forms/FormControl.vue'),
+            path: '/classified/list',
+            name: 'Classified List',
+            component: () => import('@/views/classified/ClassifiedForm.vue'),
           },
           {
-            path: '/forms/select',
-            name: 'Select',
-            component: () => import('@/views/forms/Select.vue'),
+            path: '/classified/create',
+            name: 'Classified Create',
+            component: () => import('@/views/classified/ClassifiedForm.vue'),
           },
           {
-            path: '/forms/checks-radios',
-            name: 'Checks & Radios',
-            component: () => import('@/views/forms/ChecksRadios.vue'),
-          },
-          {
-            path: '/forms/range',
-            name: 'Range',
-            component: () => import('@/views/forms/Range.vue'),
-          },
-          {
-            path: '/forms/input-group',
-            name: 'Input Group',
-            component: () => import('@/views/forms/InputGroup.vue'),
-          },
-          {
-            path: '/forms/floating-labels',
-            name: 'Floating Labels',
-            component: () => import('@/views/forms/FloatingLabels.vue'),
-          },
-          {
-            path: '/forms/layout',
-            name: 'Layout',
-            component: () => import('@/views/forms/Layout.vue'),
-          },
-          {
-            path: '/forms/validation',
-            name: 'Validation',
-            component: () => import('@/views/forms/Validation.vue'),
+            path: '/classified/edit/:id',
+            name: 'Classified Edit',
+            component: () => import('@/views/classified/ClassifiedForm.vue'),
           },
         ],
       },

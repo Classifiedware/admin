@@ -6,6 +6,8 @@ export const API_URL_ADMIN_UPDATE = "admin/update";
 export const API_URL_ADMIN_LIST = "admin/list";
 export const API_URL_ADMIN_LOAD = "admin/load";
 
+export const API_URL_PROPERTY_LOAD = "property/load";
+
 export const API_URL_DASHBOARD_INDEX = "dashboard";
 
 export const API_URL_ADMIN_AUTH_CHECK = "auth/check";
