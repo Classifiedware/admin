@@ -6,7 +6,7 @@
           <strong>Classified Create/Edit</strong>
         </CCardHeader>
         <CCardBody>
-            <CForm @submit.prevent="onSaveClassified">
+            <CForm enctype="multipart/form-data" @submit.prevent="onSaveClassified">
 
               <CRow class="mb-3">
                 <CFormLabel for="classifiedName" class="col-sm-2 col-form-label">Name</CFormLabel>
@@ -15,6 +15,8 @@
                     id="classifiedName"
                     type="text"
                     placeholder="Ein Auto mit einer guten Ausstattung"
+                    required="required"
+                    v-model:model-value="classifiedData.name"
                   />
                 </div>
               </CRow>
@@ -25,6 +27,8 @@
                   <CFormTextarea
                     id="classifiedDescription"
                     rows="3"
+                    required="required"
+                    v-model:model-value="classifiedData.description"
                   ></CFormTextarea>
                 </div>
               </CRow>
@@ -36,6 +40,8 @@
                     id="classifiedPrice"
                     type="text"
                     placeholder="47.490"
+                    required="required"
+                    v-model:model-value="classifiedData.price"
                   />
                 </div>
                 <div class="col-sm-2">
@@ -50,6 +56,21 @@
                     id="classifiedOfferNumber"
                     type="text"
                     placeholder="ABC00000000"
+                    required="required"
+                    v-model:model-value="classifiedData.offerNumber"
+                  />
+                </div>
+              </CRow>
+
+              <CRow class="mb-3">
+                <CFormLabel for="classifiedImage" class="col-sm-2 col-form-label">Bilder</CFormLabel>
+                <div class="col-sm-10">
+                  <CFormInput
+                    id="classifiedImage"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    @change="onClassifiedImagesChanged($event)"
                   />
                 </div>
               </CRow>
@@ -100,13 +121,25 @@
     </CCol>
   </CRow>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { createPropertyApiService } from "../../service/property.api.service.factory.ts";
+import { createClassifiedApiService } from "../../service/classified.api.service.factory.ts";
+import { IClassified } from "../../types/classified";
+
+const classifiedData: IClassified = {
+  id: null,
+  name: '',
+  description: '',
+  price: '',
+  offerNumber: '',
+  uploadedImages: [],
+};
 
 const propertyGroupEquipmentActiveId = ref('');
 
 const propertyApiService = createPropertyApiService();
+const classifiedApiService = createClassifiedApiService();
 const groupOptions = ref([]);
 const checkedGroupOptionIds = ref([]);
 
@@ -119,8 +152,24 @@ propertyApiService.loadEquipmentProperty().then((response) => {
   }
 });
 
-function onSaveClassified() {
-  console.log('save classified', checkedGroupOptionIds);
+function onClassifiedImagesChanged($event: Event) {
+  console.log('images changed', $event);
+
+  const target = $event.target as HTMLInputElement;
+  if (target && target.files) {
+    classifiedData.uploadedImages = [...target.files];
+  }
+}
+
+async function onSaveClassified() {
+  console.log('classified data', classifiedData, 'checked property', checkedGroupOptionIds);
+
+  const response = await classifiedApiService.upsertClassified(
+    classifiedData,
+    checkedGroupOptionIds.value
+  );
+
+  console.log('response', response);
 }
 
 </script>
