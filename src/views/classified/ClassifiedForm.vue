@@ -157,7 +157,7 @@ function onClassifiedImagesChanged($event: Event) {
 
   const target = $event.target as HTMLInputElement;
   if (target && target.files) {
-    classifiedData.uploadedImages = [...target.files];
+    classifiedData.uploadedImages = target.files;
   }
 }
 

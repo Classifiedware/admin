@@ -7,35 +7,35 @@ export class ClassifiedApiService {
     classified: IClassified,
     propertyGroupOptionIds: string[]
   ) {
-    const formData: FormData = this.buildFormData(classified, propertyGroupOptionIds);
+    const payload: object = this.buildPayload(classified, propertyGroupOptionIds);
 
-    return await apiClient.post(API_URL_CLASSIFIED_CREATE, formData, {
+    return await apiClient.post(API_URL_CLASSIFIED_CREATE, payload, {
       headers: {
         'Content-Type': 'multipart/form-data',
       }
     });
   }
 
-  buildFormData(
+  buildPayload(
     classified: IClassified,
     propertyGroupOptionIds: string[]
-  ): FormData {
-    const formData: FormData = new FormData();
+  ): object {
+    const jsonData = {
+      id: classified.id,
+      name: classified.name,
+      description: classified.description,
+      price: classified.price,
+      offerNumber: classified.offerNumber,
+      propertyGroupOptionIds: [],
+    };
 
-    formData.append('id', classified.id);
-    formData.append('name', classified.name);
-    formData.append('description', classified.description);
-    formData.append('price', classified.price);
-    formData.append('offerNumber', classified.offerNumber);
+    jsonData.propertyGroupOptionIds = propertyGroupOptionIds.map(((propertyGroupOptionId: string) => {
+      return propertyGroupOptionId;
+    }));
 
-    propertyGroupOptionIds.forEach((propertyGroupOptionId: string) => {
-      formData.append('propertyGroupOptionIds[]', propertyGroupOptionId);
-    });
-
-    classified.uploadedImages.forEach((uploadedImage: File) => {
-      formData.append('uploadedImages[]', uploadedImage);
-    });
-
-    return formData;
+    return {
+      'jsonData': jsonData,
+      'uploadedImages[]': classified.uploadedImages,
+    };
   }
 }

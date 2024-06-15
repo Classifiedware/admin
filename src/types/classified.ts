@@ -4,5 +4,5 @@ export interface IClassified {
   description: string,
   price: string,
   offerNumber: string,
-  uploadedImages: File[],
+  uploadedImages: FileList,
 }
