@@ -75,39 +75,86 @@
                 </div>
               </CRow>
 
-              <CRow class="mb-3">
-                <CFormLabel for="classifiedProperties" class="col-sm-2 col-form-label">Ausstattung</CFormLabel>
+              <template v-for="propertyGroup in propertyGroups">
 
-                <div class="col-sm-10">
-                  <CNav variant="tabs" role="tablist">
-                    <CNavItem v-for="groupOption in groupOptions">
-                      <CNavLink
-                        href="javascript:void(0);"
-                        :active="propertyGroupEquipmentActiveId === groupOption.id"
-                        @click="() => {propertyGroupEquipmentActiveId = groupOption.id}"
-                      >
-                        {{ groupOption.name }}
-                      </CNavLink>
-                    </CNavItem>
+                <CRow class="mb-3">
+                  <CFormLabel for="classifiedProperties" class="col-sm-2 col-form-label">{{ propertyGroup.name }}</CFormLabel>
 
-                  </CNav>
-                  <CTabContent>
-                    <CTabPane v-for="groupOption in groupOptions"
-                              role="tabpanel"
-                              :aria-labelledby="`propertyGroupTab-${groupOption.id}`"
-                              :visible="propertyGroupEquipmentActiveId === groupOption.id">
-                      <CFormCheck v-for="optionValue in groupOption.optionValues"
-                                  :id="`propertyGroup-${groupOption.id}-groupOption-${optionValue.id}`"
-                                  :value="optionValue.id"
-                                  :label="optionValue.value"
-                                  v-model="checkedGroupOptionIds"
+                  <CRow>
+                  <template v-for="groupOption in propertyGroup.groupOptions">
+
+                  <template v-if="groupOption.type === 'checkbox'">
+                    <CCol xs="6" md="4">
+                      <CFormCheck
+                        id="flexCheckDefault"
+                        :label="groupOption.name"
+                        v-model="checkedGroupOptionIds"
                       />
-                    </CTabPane>
-                  </CTabContent>
+                    </CCol>
+                  </template>
 
-                </div>
+                  <template v-if="groupOption.type === 'selectRange'">
+                      <CCol md="6">
+                        <CFormLabel :for="groupOption.name">{{ groupOption.name }}</CFormLabel>
+                        <CFormInput
+                          id="classifiedSelectRange"
+                          type="text"
+                          placeholder=""
+                          v-model:model-value="enteredGroupOptionData"
+                        />
+                      </CCol>
+                 </template>
 
-              </CRow>
+                <template v-if="groupOption.type === 'checkboxGroup'">
+                  <CFormLabel :for="groupOption.name">{{ groupOption.name }}</CFormLabel>
+                  <CCol md="3" sm="6"
+                        v-for="optionValue in groupOption.optionValues">
+                    <CFormCheck
+                      id="flexCheckDefault"
+                      :value="optionValue.id"
+                      :label="optionValue.value"
+                      v-model="checkedGroupOptionIds"
+                    />
+                  </CCol>
+
+
+                </template>
+
+                </template>
+               </CRow>
+
+                <template v-if="propertyGroup.isEquipmentGroup">
+                    <div class="col-sm-10">
+                      <CNav variant="tabs" role="tablist">
+                        <CNavItem v-for="groupOption in propertyGroup.groupOptions">
+                          <CNavLink
+                            href="javascript:void(0);"
+                            :active="propertyGroupEquipmentActiveId === groupOption.id"
+                            @click="() => {propertyGroupEquipmentActiveId = groupOption.id}"
+                          >
+                            {{ groupOption.name }}
+                          </CNavLink>
+                        </CNavItem>
+                      </CNav>
+                      <CTabContent>
+                        <CTabPane v-for="groupOption in propertyGroup.groupOptions"
+                                  role="tabpanel"
+                                  :aria-labelledby="`propertyGroupTab-${groupOption.id}`"
+                                  :visible="propertyGroupEquipmentActiveId === groupOption.id">
+                          <CFormCheck v-for="optionValue in groupOption.optionValues"
+                                      :id="`propertyGroup-${groupOption.id}-groupOption-${optionValue.id}`"
+                                      :value="optionValue.id"
+                                      :label="optionValue.value"
+                                      v-model="checkedGroupOptionIds"
+                          />
+                        </CTabPane>
+                      </CTabContent>
+                    </div>
+                </template>
+
+                </CRow>
+
+              </template>
 
               <CRow class="mb-3">
                 <CCol xs="12">
@@ -140,15 +187,16 @@ const propertyGroupEquipmentActiveId = ref('');
 
 const propertyApiService = createPropertyApiService();
 const classifiedApiService = createClassifiedApiService();
-const groupOptions = ref([]);
+const propertyGroups = ref([]);
 const checkedGroupOptionIds = ref([]);
+const enteredGroupOptionData = ref([]);
 
-propertyApiService.loadEquipmentProperty().then((response) => {
-  groupOptions.value = response;
+propertyApiService.loadPropertyGroups().then((response) => {
+  propertyGroups.value = response;
 
   // Set the first property group as active tab
   if (propertyGroupEquipmentActiveId.value === '') {
-    propertyGroupEquipmentActiveId.value = groupOptions.value[0].id
+    propertyGroupEquipmentActiveId.value = propertyGroups.value[0].id
   }
 });
 
