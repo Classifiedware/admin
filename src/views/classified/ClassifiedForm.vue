@@ -78,7 +78,7 @@
               <template v-for="propertyGroup in propertyGroups">
 
                 <CRow class="mb-3">
-                  <CFormLabel for="classifiedProperties" class="col-sm-2 col-form-label">{{ propertyGroup.name }}</CFormLabel>
+                  <h5 class="card-title pb-2 border-bottom">{{ propertyGroup.name }}</h5>
 
                   <CRow>
                   <template v-for="groupOption in propertyGroup.groupOptions">
@@ -86,18 +86,36 @@
                   <template v-if="groupOption.type === 'checkbox'">
                     <CCol xs="6" md="4">
                       <CFormCheck
-                        id="flexCheckDefault"
+                        :id="`checkbox-${groupOption.id}`"
+                        :value="groupOption.id"
                         :label="groupOption.name"
                         v-model="checkedGroupOptionIds"
                       />
                     </CCol>
                   </template>
 
+                 <template v-if="groupOption.type === 'select'
+                    && groupOption.name !== 'Marke'
+                    && groupOption.name !== 'Modell'">
+                      <CCol md="6">
+                        <CFormSelect
+                          :aria-label="groupOption.name"
+                          :label="groupOption.name"
+                          v-model="groupOption.selectFrom">
+                          <option value="">beliebig</option>
+                          <option v-for="optionValue in groupOption.optionValues"
+                                  :value="optionValue.id">
+                            {{ optionValue.value }}
+                          </option>
+                        </CFormSelect>
+                      </CCol>
+                 </template>
+
                   <template v-if="groupOption.type === 'selectRange'">
                       <CCol md="6">
-                        <CFormLabel :for="groupOption.name">{{ groupOption.name }}</CFormLabel>
                         <CFormInput
-                          id="classifiedSelectRange"
+                          :id="`selectRange-${groupOption.id}`"
+                          :label="groupOption.name"
                           type="text"
                           placeholder=""
                           v-model:model-value="enteredGroupOptionData"
@@ -106,11 +124,11 @@
                  </template>
 
                 <template v-if="groupOption.type === 'checkboxGroup'">
-                  <CFormLabel :for="groupOption.name">{{ groupOption.name }}</CFormLabel>
+                  <CFormLabel>{{ groupOption.name }}</CFormLabel>
                   <CCol md="3" sm="6"
                         v-for="optionValue in groupOption.optionValues">
                     <CFormCheck
-                      id="flexCheckDefault"
+                      :id="`checkbox-${groupOption.id}-option-value-${optionValue.id}`"
                       :value="optionValue.id"
                       :label="optionValue.value"
                       v-model="checkedGroupOptionIds"
