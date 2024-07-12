@@ -5,9 +5,16 @@ import { IClassified } from "../types/classified";
 export class ClassifiedApiService {
   async upsertClassified(
     classified: IClassified,
-    propertyGroupOptionIds: string[]
+    checkedPropertyGroupOptionIds: string[],
+    selectedPropertyGroupOptionIds: string[],
+    enteredPropertyGroupOptionData: string[]
   ) {
-    const payload: object = this.buildPayload(classified, propertyGroupOptionIds);
+    const payload: object = this.buildPayload(
+      classified,
+      checkedPropertyGroupOptionIds,
+      selectedPropertyGroupOptionIds,
+      enteredPropertyGroupOptionData
+    );
 
     return await apiClient.post(API_URL_CLASSIFIED_CREATE, payload, {
       headers: {
@@ -18,7 +25,9 @@ export class ClassifiedApiService {
 
   buildPayload(
     classified: IClassified,
-    propertyGroupOptionIds: string[]
+    checkedPropertyGroupOptionIds: string[],
+    selectedPropertyGroupOptionIds: string[],
+    enteredPropertyGroupOptionData: string[]
   ): object {
     const jsonData = {
       id: classified.id,
@@ -27,11 +36,16 @@ export class ClassifiedApiService {
       price: classified.price,
       offerNumber: classified.offerNumber,
       propertyGroupOptionIds: [],
+      enteredPropertyGroupOptionData: [],
     };
 
-    jsonData.propertyGroupOptionIds = propertyGroupOptionIds.map(((propertyGroupOptionId: string) => {
-      return propertyGroupOptionId;
-    }));
+    jsonData.propertyGroupOptionIds = checkedPropertyGroupOptionIds.concat(selectedPropertyGroupOptionIds);
+
+    console.log('json data', jsonData);
+
+    jsonData.enteredPropertyGroupOptionData = {
+      ...enteredPropertyGroupOptionData
+    };
 
     return {
       'jsonData': jsonData,

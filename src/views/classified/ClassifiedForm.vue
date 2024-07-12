@@ -314,6 +314,20 @@ function filterModelsByBrand(brand: string) {
   return filteredModels.value;
 }
 
+function getSelectedGroupOptionIds() {
+  const selectedGroupOptionIds = ref([]);
+
+  propertyGroups.value.forEach((property: IProperty) => {
+    property.groupOptions.forEach((groupOption: IGroupOption) => {
+      if (groupOption.selectFrom) {
+        selectedGroupOptionIds.value.push(groupOption.selectFrom);
+      }
+    })
+  })
+
+  return selectedGroupOptionIds;
+}
+
 watch(selectedBrand, () => {
   // In case of no brand is selected
   // Remove the previously selected model
@@ -333,11 +347,11 @@ watch(selectedBrand, () => {
 });
 
 async function onSaveClassified() {
-  console.log('classified data', classifiedData, 'checked property', checkedGroupOptionIds, 'entered data', enteredGroupOptionData);
-
   const response = await classifiedApiService.upsertClassified(
     classifiedData,
-    checkedGroupOptionIds.value
+    checkedGroupOptionIds.value,
+    getSelectedGroupOptionIds().value,
+    enteredGroupOptionData.value
   );
 
   console.log('response', response);
