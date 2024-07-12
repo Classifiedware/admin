@@ -209,12 +209,16 @@
                                   role="tabpanel"
                                   :aria-labelledby="`propertyGroupTab-${groupOption.id}`"
                                   :visible="propertyGroupEquipmentActiveId === groupOption.id">
-                          <CFormCheck v-for="optionValue in groupOption.optionValues"
-                                      :id="`propertyGroup-${groupOption.id}-groupOption-${optionValue.id}`"
+                          <CRow>
+                          <CCol xs="6" md="4"
+                                v-for="optionValue in groupOption.optionValues">
+                          <CFormCheck :id="`propertyGroup-${groupOption.id}-groupOption-${optionValue.id}`"
                                       :value="optionValue.id"
                                       :label="optionValue.value"
                                       v-model="checkedGroupOptionIds"
                           />
+                          </CCol>
+                          </CRow>
                         </CTabPane>
                       </CTabContent>
                     </div>
