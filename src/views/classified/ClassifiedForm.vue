@@ -274,9 +274,13 @@ const possibleModels = ref([]);
 propertyApiService.loadPropertyGroups().then((response) => {
   propertyGroups.value = response;
 
-  // Set the first property group as active tab
+  // Set the first property group for equipment as active tab
   if (propertyGroupEquipmentActiveId.value === '') {
-    propertyGroupEquipmentActiveId.value = propertyGroups.value[0].id
+    const filteredPropertyGroupEquipment = propertyGroups.value.filter((propertyGroup: IProperty) => {
+      return propertyGroup.isEquipmentGroup;
+    }).shift();
+
+    propertyGroupEquipmentActiveId.value = filteredPropertyGroupEquipment.groupOptions[0].id;
   }
 });
 
