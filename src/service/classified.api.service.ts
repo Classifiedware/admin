@@ -5,12 +5,16 @@ import { IClassified } from "../types/classified";
 export class ClassifiedApiService {
   async upsertClassified(
     classified: IClassified,
+    selectedBrandId: string,
+    selectedModelId: string,
     checkedPropertyGroupOptionIds: string[],
     selectedPropertyGroupOptionIds: string[],
     enteredPropertyGroupOptionData: string[]
   ) {
     const payload: object = this.buildPayload(
       classified,
+      selectedBrandId,
+      selectedModelId,
       checkedPropertyGroupOptionIds,
       selectedPropertyGroupOptionIds,
       enteredPropertyGroupOptionData
@@ -25,6 +29,8 @@ export class ClassifiedApiService {
 
   buildPayload(
     classified: IClassified,
+    selectedBrandId: string,
+    selectedModelId: string,
     checkedPropertyGroupOptionIds: string[],
     selectedPropertyGroupOptionIds: string[],
     enteredPropertyGroupOptionData: string[]
@@ -40,6 +46,7 @@ export class ClassifiedApiService {
     };
 
     jsonData.propertyGroupOptionIds = checkedPropertyGroupOptionIds.concat(selectedPropertyGroupOptionIds);
+    jsonData.propertyGroupOptionIds = jsonData.propertyGroupOptionIds.concat([selectedBrandId, selectedModelId]);
 
     console.log('json data', jsonData);
 

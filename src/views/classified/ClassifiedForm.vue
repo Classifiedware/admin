@@ -102,7 +102,7 @@
                        v-model="selectedBrand">
                        <option value="">beliebig</option>
                        <option v-for="optionValue in groupOption.optionValues"
-                               :value="optionValue.value">
+                               :value="`${optionValue.value}|${optionValue.id}`">
                          {{ optionValue.value }}
                        </option>
                      </CFormSelect>
@@ -328,7 +328,13 @@ function getSelectedGroupOptionIds() {
   return selectedGroupOptionIds;
 }
 
+function parseBrand(brand: string, index: number): string {
+  return brand.split('|')[index];
+}
+
 watch(selectedBrand, () => {
+  console.log('selected brand', selectedBrand);
+
   // In case of no brand is selected
   // Remove the previously selected model
   if (selectedBrand.value.length === 0) {
@@ -340,15 +346,21 @@ watch(selectedBrand, () => {
     return;
   }
 
-  possibleModels.value = filterModelsByBrand(selectedBrand.value);
+  const parsedBrand = parseBrand(selectedBrand.value, 0);
+
+  possibleModels.value = filterModelsByBrand(parsedBrand);
   selectedModel.value = '';
 
   console.log('possible models', possibleModels);
 });
 
 async function onSaveClassified() {
+  const parsedBrandId = parseBrand(selectedBrand.value, 1);
+
   const response = await classifiedApiService.upsertClassified(
     classifiedData,
+    parsedBrandId,
+    selectedModel.value,
     checkedGroupOptionIds.value,
     getSelectedGroupOptionIds().value,
     enteredGroupOptionData.value
