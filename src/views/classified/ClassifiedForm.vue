@@ -161,7 +161,7 @@
                       </CCol>
                  </template>
 
-                  <template v-if="groupOption.type === 'selectRange'">
+                  <template v-if="groupOption.type === 'selectRange' && groupOption.name !== groupOptionNamePrice">
                       <CCol md="6">
                         <CFormInput
                           :id="`selectRange-${groupOption.id}`"
@@ -252,6 +252,7 @@ import { IOptionValue } from "@/types/optionValue";
 const propertyGroupNameBrandAndModel = 'Marke, Modell, Variante';
 const groupOptionNameBrand = 'Marke';
 const groupOptionNameModel = 'Modell';
+const groupOptionNamePrice = 'Preis (€)';
 
 const classifiedData: IClassified = {
   id: null,
