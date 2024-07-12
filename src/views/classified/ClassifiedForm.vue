@@ -3,7 +3,7 @@
     <CCol :xs="12">
       <CCard class="mb-4">
         <CCardHeader>
-          <strong>Classified Create/Edit</strong>
+          <strong>Inserat erstellen</strong>
         </CCardHeader>
         <CCardBody>
             <CForm enctype="multipart/form-data" @submit.prevent="onSaveClassified">
@@ -94,9 +94,59 @@
                     </CCol>
                   </template>
 
+                 <template v-if="groupOption.type === 'select' && groupOption.name === groupOptionNameBrand">
+                   <CCol md="6">
+                     <CFormSelect
+                       :aria-label="groupOption.name"
+                       :label="groupOption.name"
+                       v-model="selectedBrand">
+                       <option value="">beliebig</option>
+                       <option v-for="optionValue in groupOption.optionValues"
+                               :value="optionValue.value">
+                         {{ optionValue.value }}
+                       </option>
+                     </CFormSelect>
+                   </CCol>
+                 </template>
+
+                <template v-if="groupOption.type === 'select' && groupOption.name === groupOptionNameModel">
+                  <CCol md="6">
+                    <CFormSelect
+                      :aria-label="groupOption.name"
+                      :label="groupOption.name"
+                      :disabled="possibleModels.length === 0"
+                      v-model="selectedModel">
+                      <option value="">beliebig</option>
+                      <template v-if="possibleModels"
+                                v-for="groupOptionValue in possibleModels">
+
+                        <option v-if="groupOptionValue.childName"
+                                :label="groupOptionValue.childName"
+                                :value="groupOptionValue.id"
+                                disabled>
+                          {{ groupOptionValue.childName }}
+                        </option>
+
+                        <option v-if="groupOptionValue.values"
+                                v-for="childValue in groupOptionValue.values"
+                                :label="childValue.value"
+                                :value="childValue.id">
+                          {{ childValue.value }}
+                        </option>
+
+                        <option v-if="groupOptionValue.value"
+                                :label="groupOptionValue.value"
+                                :value="groupOptionValue.id">
+                          {{ groupOptionValue.value }}
+                        </option>
+                      </template>
+                    </CFormSelect>
+                  </CCol>
+                </template>
+
                  <template v-if="groupOption.type === 'select'
-                    && groupOption.name !== 'Marke'
-                    && groupOption.name !== 'Modell'">
+                    && groupOption.name !== groupOptionNameBrand
+                    && groupOption.name !== groupOptionNameModel">
                       <CCol md="6">
                         <CFormSelect
                           :aria-label="groupOption.name"
@@ -118,7 +168,7 @@
                           :label="groupOption.name"
                           type="text"
                           placeholder=""
-                          v-model:model-value="enteredGroupOptionData"
+                          v-model="enteredGroupOptionData[groupOption.id]"
                         />
                       </CCol>
                  </template>
@@ -187,10 +237,17 @@
   </CRow>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
-import { createPropertyApiService } from "../../service/property.api.service.factory.ts";
-import { createClassifiedApiService } from "../../service/classified.api.service.factory.ts";
-import { IClassified } from "../../types/classified";
+import { ref, watch } from "vue";
+import { createPropertyApiService } from "@/service/property.api.service.factory.ts";
+import { createClassifiedApiService } from "@/service/classified.api.service.factory.ts";
+import { IClassified } from "@/types/classified";
+import { IProperty } from "@/types/property";
+import { IGroupOption } from "@/types/groupOption";
+import { IOptionValue } from "@/types/optionValue";
+
+const propertyGroupNameBrandAndModel = 'Marke, Modell, Variante';
+const groupOptionNameBrand = 'Marke';
+const groupOptionNameModel = 'Modell';
 
 const classifiedData: IClassified = {
   id: null,
@@ -208,6 +265,11 @@ const classifiedApiService = createClassifiedApiService();
 const propertyGroups = ref([]);
 const checkedGroupOptionIds = ref([]);
 const enteredGroupOptionData = ref([]);
+
+const selectedBrand = ref('');
+const selectedModel = ref('');
+
+const possibleModels = ref([]);
 
 propertyApiService.loadPropertyGroups().then((response) => {
   propertyGroups.value = response;
@@ -227,8 +289,42 @@ function onClassifiedImagesChanged($event: Event) {
   }
 }
 
+function filterModelsByBrand(brand: string) {
+  const filteredModels = ref([]);
+
+  propertyGroups.value.forEach((property: IProperty) => {
+    property.groupOptions.forEach((groupOption: IGroupOption) => {
+      groupOption.optionValues.forEach((optionValue: IOptionValue) => {
+        if (property.name === propertyGroupNameBrandAndModel && groupOption.name === groupOptionNameModel && optionValue.parentName === brand) {
+          filteredModels.value.push(optionValue);
+        }
+      });
+    })
+  });
+
+  return filteredModels.value;
+}
+
+watch(selectedBrand, () => {
+  // In case of no brand is selected
+  // Remove the previously selected model
+  if (selectedBrand.value.length === 0) {
+    console.log('no brand selected');
+
+    possibleModels.value = [];
+    selectedModel.value = '';
+
+    return;
+  }
+
+  possibleModels.value = filterModelsByBrand(selectedBrand.value);
+  selectedModel.value = '';
+
+  console.log('possible models', possibleModels);
+});
+
 async function onSaveClassified() {
-  console.log('classified data', classifiedData, 'checked property', checkedGroupOptionIds);
+  console.log('classified data', classifiedData, 'checked property', checkedGroupOptionIds, 'entered data', enteredGroupOptionData);
 
   const response = await classifiedApiService.upsertClassified(
     classifiedData,

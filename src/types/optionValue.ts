@@ -1,4 +1,7 @@
 export interface IOptionValue {
   id: string,
-  value: string,
+  parentName: string,
+  childName: null | string,
+  value: null | string,
+  values: [],
 }
