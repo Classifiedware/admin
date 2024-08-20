@@ -168,7 +168,7 @@
                           :label="groupOption.name"
                           type="text"
                           placeholder=""
-                          v-model="enteredGroupOptionData[groupOption.id]"
+                          v-model="enteredGroupOptionData[groupOption.id + '|' + propertyGroup.id]"
                         />
                       </CCol>
                  </template>
