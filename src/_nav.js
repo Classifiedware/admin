@@ -16,46 +16,46 @@ export default [
   {
     component: 'CNavGroup',
     name: 'Inserate',
-    to: '/base',
+    to: '/classified',
     icon: 'cil-pencil',
     items: [
       {
         component: 'CNavItem',
         name: 'Inserate verwalten',
-        to: '/base/accordion',
+        to: '/classified/list',
       },
       {
         component: 'CNavItem',
         name: 'Inserate erstellen',
-        to: '/base/breadcrumbs',
+        to: '/classified/create',
       },
     ],
   },
   {
     component: 'CNavGroup',
     name: 'Eigenschaften',
-    to: '/buttons',
+    to: '/property/group',
     icon: 'cil-puzzle',
     items: [
       {
         component: 'CNavItem',
         name: 'Eigenschaften verwalten',
-        to: '/buttons/standard-buttons',
+        to: '/property/group/list',
       },
       {
         component: 'CNavItem',
         name: 'Eigenschaft erstellen',
-        to: '/buttons/button-groups',
+        to: '/property/group/create',
       },
       {
         component: 'CNavItem',
         name: 'Optionen verwalten',
-        to: '/buttons/standard-buttons',
+        to: '/property/group/option/list',
       },
       {
         component: 'CNavItem',
         name: 'Option erstellen',
-        to: '/buttons/standard-buttons',
+        to: '/property/group/option/create',
       },
     ],
   },
@@ -68,12 +68,12 @@ export default [
       {
         component: 'CNavItem',
         name: 'Admin verwalten',
-        to: '/icons/brands',
+        to: '/admin/list',
       },
       {
         component: 'CNavItem',
         name: 'Admin erstellen',
-        to: '/icons/flags',
+        to: '/admin/create',
       },
     ],
   },
