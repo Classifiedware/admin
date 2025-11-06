@@ -4,5 +4,10 @@ export interface IClassified {
   description: string,
   price: string,
   offerNumber: string,
+  checkedPropertyGroupOptionIds: Array<string>,
+  selectedPropertyGroupOptionIds: Array<string>,
+  enteredPropertyGroupOptionData: Array<string>,
+  selectedBrand: string,
+  selectedModel: string,
   uploadedImages: FileList,
 }

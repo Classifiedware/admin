@@ -177,7 +177,7 @@ const routes = [
           {
             path: '/classified/edit/:id',
             name: 'Classified Edit',
-            component: () => import('@/views/classified/ClassifiedForm.vue'),
+            component: () => import('@/views/classified/ClassifiedEdit.vue'),
           },
         ],
       },

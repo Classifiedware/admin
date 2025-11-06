@@ -1,8 +1,36 @@
 import apiClient from "./api.client.service";
-import { API_URL_CLASSIFIED_CREATE } from "@/api.const";
+import { API_URL_CLASSIFIED_CREATE, API_URL_CLASSIFIED_LOAD } from "@/api.const";
 import { IClassified } from "../types/classified";
+import { AxiosResponse } from "axios";
 
 export class ClassifiedApiService {
+  async loadClassified(classifiedId: string): Promise<IClassified> {
+    return await apiClient.get(`${API_URL_CLASSIFIED_LOAD}/${classifiedId}`)
+      .then(async (response: AxiosResponse): Promise<IClassified> => {
+        return this.createClassifiedFromData(response.data.data);
+      }).catch((error) => {
+        console.log('catch', error);
+
+        return { };
+      });
+  }
+
+  createClassifiedFromData(data: any): IClassified {
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      offerNumber: data.offerNumber,
+      checkedPropertyGroupOptionIds: data.checkedPropertyGroupOptionIds,
+      selectedPropertyGroupOptionIds: data.selectedPropertyGroupOptionIds,
+      enteredPropertyGroupOptionData: data.enteredPropertyGroupOptionData,
+      selectedBrand: data.selectedBrand,
+      selectedModel: data.selectedModel,
+      uploadedImages: data.uploadedImages,
+    };
+  }
+
   async upsertClassified(
     classified: IClassified,
     selectedBrandId: string,
