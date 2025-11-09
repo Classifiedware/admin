@@ -1,5 +1,5 @@
 <template>
-  <CRow>
+  <CRow v-if="!isLoading">
     <CCol :xs="12">
       <CCard class="mb-4">
         <CCardHeader>
@@ -75,7 +75,7 @@
                 </div>
               </CRow>
 
-              <template v-for="propertyGroup in propertyGroups">
+              <template v-for="propertyGroup in classifiedData.propertyGroups">
 
                 <CRow class="mb-3">
                   <h5 class="card-title pb-2 border-bottom">{{ propertyGroup.name }}</h5>
@@ -99,6 +99,7 @@
                      <CFormSelect
                        :aria-label="groupOption.name"
                        :label="groupOption.name"
+                       @change="onChangeBrand($event.target.value)"
                        v-model="classifiedData.selectedBrand">
                        <option value="">beliebig</option>
                        <option v-for="optionValue in groupOption.optionValues"
@@ -241,9 +242,8 @@
   </CRow>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, reactive } from "vue";
 import router from '@/router'
-import { createPropertyApiService } from "@/service/property.api.service.factory.ts";
 import { createClassifiedApiService } from "@/service/classified.api.service.factory.ts";
 import { IClassified } from "@/types/classified";
 import { IProperty } from "@/types/property";
@@ -267,42 +267,36 @@ let classifiedData: IClassified = {
   selectedBrand: '',
   selectedModel: '',
   uploadedImages: [],
+  propertyGroups: [],
 };
 
+const isLoading = ref(true);
+
 const propertyGroupEquipmentActiveId = ref('');
-
-const propertyApiService = createPropertyApiService();
 const classifiedApiService = createClassifiedApiService();
-const propertyGroups = ref([]);
-const checkedGroupOptionIds = ref([]);
-const enteredGroupOptionData = ref([]);
-
-const selectedBrand = ref('');
-const selectedModel = ref('');
-
 const possibleModels = ref([]);
-
 const classifiedId = router.currentRoute.value.params.id;
 
 classifiedApiService.loadClassified(classifiedId).then((classified: IClassified) => {
   classifiedData = classified;
 
-  console.log('data', classifiedData);
-});
+  setBrandModel();
 
-propertyApiService.loadPropertyGroups().then((response) => {
-  propertyGroups.value = response;
-
-  console.log('propertyGroups', propertyGroups);
+  console.log('brand model loaded', classifiedData.selectedModel);
 
   // Set the first property group for equipment as active tab
   if (propertyGroupEquipmentActiveId.value === '') {
-    const filteredPropertyGroupEquipment = propertyGroups.value.filter((propertyGroup: IProperty) => {
+    const filteredPropertyGroupEquipment = classifiedData.propertyGroups.filter((propertyGroup: IProperty) => {
       return propertyGroup.isEquipmentGroup;
     }).shift();
 
     propertyGroupEquipmentActiveId.value = filteredPropertyGroupEquipment.groupOptions[0].id;
   }
+
+  console.log('data', classifiedData);
+
+  isLoading.value = false;
+
 });
 
 function onClassifiedImagesChanged($event: Event) {
@@ -317,7 +311,9 @@ function onClassifiedImagesChanged($event: Event) {
 function filterModelsByBrand(brand: string) {
   const filteredModels = ref([]);
 
-  propertyGroups.value.forEach((property: IProperty) => {
+  console.log('classifiedData.propertyGroups', classifiedData.propertyGroups);
+
+  classifiedData.propertyGroups.forEach((property: IProperty) => {
     property.groupOptions.forEach((groupOption: IGroupOption) => {
       groupOption.optionValues.forEach((optionValue: IOptionValue) => {
         if (property.name === propertyGroupNameBrandAndModel && groupOption.name === groupOptionNameModel && optionValue.parentName === brand) {
@@ -333,7 +329,7 @@ function filterModelsByBrand(brand: string) {
 function getSelectedGroupOptionIds() {
   const selectedGroupOptionIds = ref([]);
 
-  propertyGroups.value.forEach((property: IProperty) => {
+  classifiedData.propertyGroups.forEach((property: IProperty) => {
     property.groupOptions.forEach((groupOption: IGroupOption) => {
       if (groupOption.selectFrom) {
         selectedGroupOptionIds.value.push(groupOption.selectFrom);
@@ -348,30 +344,42 @@ function parseBrand(brand: string, index: number): string {
   return brand.split('|')[index];
 }
 
-watch(selectedBrand, () => {
-  console.log('selected brand', selectedBrand);
+function setBrandModel() {
+  console.log('selected brand', classifiedData);
 
   // In case of no brand is selected
   // Remove the previously selected model
-  if (selectedBrand.value.length === 0) {
+  if (!classifiedData.selectedBrand) {
     console.log('no brand selected');
 
     possibleModels.value = [];
-    selectedModel.value = '';
+    classifiedData.selectedModel.value = '';
 
     return;
   }
 
-  const parsedBrand = parseBrand(selectedBrand.value, 0);
+  const parsedBrand = parseBrand(classifiedData.selectedBrand, 0);
+  console.log('parsedBrand', parsedBrand);
 
   possibleModels.value = filterModelsByBrand(parsedBrand);
-  selectedModel.value = '';
+  //classifiedData.selectedModel = '';
 
   console.log('possible models', possibleModels);
-});
+}
+
+function onChangeBrand(selectedBrand: string) {
+  console.log('on change brand', classifiedData.selectedBrand);
+
+  const parsedBrand = parseBrand(selectedBrand, 0);
+
+  console.log('parsedBrand 123', parsedBrand);
+
+  possibleModels.value = filterModelsByBrand(parsedBrand);
+
+}
 
 async function onSaveClassified() {
-  const parsedBrandId = parseBrand(selectedBrand.value, 1);
+  /*const parsedBrandId = parseBrand(selectedBrand.value, 1);
 
   const response = await classifiedApiService.upsertClassified(
     classifiedData,
@@ -382,7 +390,10 @@ async function onSaveClassified() {
     enteredGroupOptionData.value
   );
 
-  console.log('response', response);
+  console.log('response', response);*/
+
+  console.log('on saveClassified', classifiedData);
+
 }
 
 </script>

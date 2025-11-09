@@ -28,6 +28,7 @@ export class ClassifiedApiService {
       selectedBrand: data.selectedBrand,
       selectedModel: data.selectedModel,
       uploadedImages: data.uploadedImages,
+      propertyGroups: data.propertyGroups,
     };
   }
 

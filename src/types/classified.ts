@@ -1,3 +1,5 @@
+import { IProperty } from "./property";
+
 export interface IClassified {
   id: null | string,
   name: string,
@@ -10,4 +12,5 @@ export interface IClassified {
   selectedBrand: string,
   selectedModel: string,
   uploadedImages: FileList,
+  propertyGroups: Array<IProperty>,
 }
