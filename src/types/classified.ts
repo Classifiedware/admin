@@ -7,6 +7,7 @@ export interface IClassified {
   price: string,
   offerNumber: string,
   checkedPropertyGroupOptionIds: Array<string>,
+  checkedPropertyGroupOptionEquipmentIds: Array<string>,
   selectedPropertyGroupOptionIds: Array<string>,
   enteredPropertyGroupOptionData: Array<string>,
   selectedBrand: string,

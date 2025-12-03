@@ -32,21 +32,10 @@ export class ClassifiedApiService {
     };
   }
 
-  async upsertClassified(
-    classified: IClassified,
-    selectedBrandId: string,
-    selectedModelId: string,
-    checkedPropertyGroupOptionIds: string[],
-    selectedPropertyGroupOptionIds: string[],
-    enteredPropertyGroupOptionData: string[]
-  ) {
+  async upsertClassified(classified: IClassified, parsedBrandId: string) {
     const payload: object = this.buildPayload(
       classified,
-      selectedBrandId,
-      selectedModelId,
-      checkedPropertyGroupOptionIds,
-      selectedPropertyGroupOptionIds,
-      enteredPropertyGroupOptionData
+      parsedBrandId
     );
 
     return await apiClient.post(API_URL_CLASSIFIED_CREATE, payload, {
@@ -56,31 +45,39 @@ export class ClassifiedApiService {
     });
   }
 
-  buildPayload(
-    classified: IClassified,
-    selectedBrandId: string,
-    selectedModelId: string,
-    checkedPropertyGroupOptionIds: string[],
-    selectedPropertyGroupOptionIds: string[],
-    enteredPropertyGroupOptionData: string[]
-  ): object {
+  buildPayload(classified: IClassified, parsedBrandId: string): object {
+    const propertyGroupOptionIds = [];
+    const enteredPropertyGroupOptionData = {};
+
+    Object.values(classified.selectedPropertyGroupOptionIds).forEach((option) => {
+      propertyGroupOptionIds.push(option);
+    });
+
+    Object.values(classified.checkedPropertyGroupOptionIds).forEach((option) => {
+      propertyGroupOptionIds.push(option);
+    });
+
+    Object.values(classified.checkedPropertyGroupOptionEquipmentIds).forEach((option) => {
+      propertyGroupOptionIds.push(option);
+    });
+
+    Object.keys(classified.enteredPropertyGroupOptionData).forEach((optionKey) => {
+      const optionValue = classified.enteredPropertyGroupOptionData[optionKey];
+      if (optionValue) {
+        enteredPropertyGroupOptionData[optionKey] = optionValue;
+      }
+    });
+
     const jsonData = {
       id: classified.id,
       name: classified.name,
       description: classified.description,
       price: classified.price,
       offerNumber: classified.offerNumber,
-      propertyGroupOptionIds: [],
-      enteredPropertyGroupOptionData: [],
-    };
-
-    jsonData.propertyGroupOptionIds = checkedPropertyGroupOptionIds.concat(selectedPropertyGroupOptionIds);
-    jsonData.propertyGroupOptionIds = jsonData.propertyGroupOptionIds.concat([selectedBrandId, selectedModelId]);
-
-    console.log('json data', jsonData);
-
-    jsonData.enteredPropertyGroupOptionData = {
-      ...enteredPropertyGroupOptionData
+      selectedBrandId: parsedBrandId,
+      selectedModelId: classified.selectedModel,
+      propertyGroupOptionIds: propertyGroupOptionIds,
+      enteredPropertyGroupOptionData: enteredPropertyGroupOptionData,
     };
 
     return {

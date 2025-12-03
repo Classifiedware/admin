@@ -167,12 +167,12 @@ const routes = [
           {
             path: '/classified/list',
             name: 'Classified List',
-            component: () => import('@/views/classified/ClassifiedForm.vue'),
+            component: () => import('@/views/classified/ClassifiedEdit.vue'),
           },
           {
             path: '/classified/create',
             name: 'Classified Create',
-            component: () => import('@/views/classified/ClassifiedForm.vue'),
+            component: () => import('@/views/classified/ClassifiedCreate.vue'),
           },
           {
             path: '/classified/edit/:id',
