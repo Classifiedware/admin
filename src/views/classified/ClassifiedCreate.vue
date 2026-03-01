@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import router from '@/router'
 
 import ClassifiedForm from "../../components/ClassifiedForm.vue";
 
@@ -121,6 +122,8 @@ async function onSaveClassified() {
   );
 
   console.log('response', response);
+
+  router.push({ name: 'Classified Edit', params: { id: response.data.data.id } });
 
 }
 </script>
