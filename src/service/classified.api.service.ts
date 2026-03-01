@@ -5,7 +5,7 @@ import { AxiosResponse } from "axios";
 
 export class ClassifiedApiService {
   async loadClassified(classifiedId: string): Promise<IClassified> {
-    return await apiClient.get(`${API_URL_CLASSIFIED_LOAD}/${classifiedId}`)
+    return await apiClient.get(`${API_URL_CLASSIFIED_LOAD}/${classifiedId}?XDEBUG_SESSION=1`)
       .then(async (response: AxiosResponse): Promise<IClassified> => {
         return this.createClassifiedFromData(response.data.data);
       }).catch((error) => {
@@ -23,6 +23,7 @@ export class ClassifiedApiService {
       price: data.price,
       offerNumber: data.offerNumber,
       checkedPropertyGroupOptionIds: data.checkedPropertyGroupOptionIds,
+      checkedPropertyGroupOptionEquipmentIds: data.checkedPropertyGroupOptionEquipmentIds,
       selectedPropertyGroupOptionIds: data.selectedPropertyGroupOptionIds,
       enteredPropertyGroupOptionData: data.enteredPropertyGroupOptionData,
       selectedBrand: data.selectedBrand,
